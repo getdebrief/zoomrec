@@ -4,7 +4,6 @@ import os
 import psutil
 import pyautogui
 import random
-import schedule
 import signal
 import subprocess
 import threading
@@ -34,19 +33,10 @@ IMG_PATH = os.path.join(BASE_PATH, "img")
 REC_PATH = os.path.join(BASE_PATH, "recordings")
 DEBUG_PATH = os.path.join(REC_PATH, "screenshots")
 
+DEFAULT_MEETING_DURATION_MINUTES = 60
+
 NAME_LIST = [
-    'iPhone',
-    'iPad',
-    'Macbook',
-    'Desktop',
-    'Huawei',
-    'Mobile',
-    'PC',
-    'Windows',
-    'Home',
-    'MyPC',
-    'Computer',
-    'Android'
+    'Debrief'
 ]
 
 TIME_FORMAT = "%Y-%m-%d_%H-%M-%S"
@@ -283,8 +273,8 @@ def show_toolbars():
     # Mouse move to show toolbar
     width, height = pyautogui.size()
     y = (height / 2)
-    pyautogui.moveTo(0, y, duration=0.5)
-    pyautogui.moveTo(width - 1, y, duration=0.5)
+    pyautogui.moveTo(0, y, duration=0.1)
+    pyautogui.moveTo(width - 1, y, duration=0.1)
 
 
 def join_audio(description):
@@ -782,17 +772,21 @@ def main():
         logging.error("Failed to create screenshot folder!")
         raise
 
-    setup_schedule()
-    join_ongoing_meeting()
+    meetingID, meetingPass, description = os.getenv('MEETING_ID'), os.getenv('MEETING_PASSCODE'), os.getenv('MEETING_DESCRIPTION')
+
+    # setup_schedule()
+    # join_ongoing_meeting()
+    join(meet_id=meetingID, meet_pw=meetingPass,
+         duration=DEFAULT_MEETING_DURATION_MINUTES, description=description)
 
 
 if __name__ == '__main__':
     main()
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
-    time_of_next_run = schedule.next_run()
-    time_now = datetime.now()
-    remaining = time_of_next_run - time_now
-    print(f"Next meeting in {remaining}", end="\r", flush=True)
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
+#     time_of_next_run = schedule.next_run()
+#     time_now = datetime.now()
+#     remaining = time_of_next_run - time_now
+#     print(f"Next meeting in {remaining}", end="\r", flush=True)
